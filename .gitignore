@@ -1,4 +1,4 @@
-__phcache__
+__pyhcache__
 staticfiles
 local_settings.py
 db.sqlite3
