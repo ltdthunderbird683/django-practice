@@ -25,7 +25,7 @@ SECRET_KEY = '3y9bmj3zb_8$ysc@4w_geo86na=fq%!8h%lmp7^y#ilj(xduam'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['stark-hamlet-21032.herokuapp.com','127.0.0.']
+ALLOWED_HOSTS = ['stark-hamlet-21032.herokuapp.com','127.0.0.1']
 
 
 # Application definition
