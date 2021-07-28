@@ -130,7 +130,7 @@ LOGIN_REDIRECT_URL = "app:home"
 LOGOUT_REDIRECT_URL = "app:index"
 LOGIN_URL = "login"
 
-DEBUG = False
+DEBUG = True
 
 try:
     from config.local_settings import *
