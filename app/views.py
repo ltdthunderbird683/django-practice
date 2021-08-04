@@ -5,12 +5,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls.base import reverse
-from django.views.generic import DetailView,UpdateView,DeleteView,CreateView,ListView
-from .form import UserForm, ListForm, CardForm, CardCreateFromHomeForm
+from django.views.generic import DetailView,UpdateView,DeleteView,CreateView,ListView,FormView
+from .form import UserForm, ListForm, CardForm, CardCreateFromHomeForm, CommentForm
 from .mixins import OnlyYouMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .models import Card, List
+from .models import Card, List, Comment
 
 
 def index(request):
@@ -110,7 +110,7 @@ class ListUpdateView(LoginRequiredMixin, UpdateView):
     model = List
     template_name = "app/lists/update.html"
     form_class = ListForm
-    success_url = reverse_lazy("qpp:home")
+    success_url = reverse_lazy("app:home")
 
     def get_success_url(self):
         return resolve_url('app:lists_detail',pk=self.kwargs['pk'])
@@ -143,10 +143,36 @@ class CardListView(LoginRequiredMixin, ListView):
     model = Card
     template_name = "app/cards/list.html"
 
-
+"""
 class CardDetailView(LoginRequiredMixin, DetailView):
     model = Card
     template_name = "app/cards/detail.html"
+    form_class = CommentForm
+"""
+
+class CardDetailCommentView(LoginRequiredMixin, FormView):
+    template_name = "app/cards/detail.html"
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        card_pk = self.kwargs['pk']
+        card_instance = get_object_or_404(Card,pk=card_pk)
+        form.instance.card = card_instance
+        comment = form.save(commit=False)
+        comment.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return resolve_url('app:cards_detail',pk=self.kwargs['pk'])
+
+    def get_context_data(self):
+        ctx = super().get_context_data()
+        ctx['comment_list'] = Comment.objects.filter(card_id=self.kwargs['pk'])
+        print(dir(Comment.objects))
+        ctx['card'] = Card.objects.get(pk=self.kwargs['pk'])
+        return ctx
+
 
 
 class CardUpdateView(LoginRequiredMixin, UpdateView):
@@ -166,6 +192,7 @@ class CardDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("app:home")
 
 
+
 class CardCreateFromHomeView(LoginRequiredMixin, CreateView):
     model = Card
     template_name = "app/cards/create.html"
@@ -178,3 +205,30 @@ class CardCreateFromHomeView(LoginRequiredMixin, CreateView):
         form.instance.list = list_instance
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+"""
+class CommentView(LoginRequiredMixin,CreateView):
+    template_name = "cards/detail.html"
+    form_class = CommentForm
+    
+    def form_valid(self, form):
+        list_pk = self.kwargs['list_pk']
+        list_instance = get_object_or_404(List, pk=list_pk)
+        form.instance.list = list_instance
+        card_pk = self.kwargs['card_pk']
+        card_instance = get_object_or_404(Card, pk=card_pk)
+        form.instance.card = card_instance
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("app:cards_detail")
+    
+
+    def get_context_data(self):
+        ctx = super().get_context_data()
+        ctx['card'] = Card.objects.get(id=self.kwargs['pk'])
+        ctx['comment_list'] = Comment.objects.get(card_id=self.kwargs['pk'])
+        return ctx
+    """
+

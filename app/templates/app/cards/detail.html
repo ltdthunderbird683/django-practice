@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<div class="container">
 <h1>カード詳細</h1>
 <dl class="row">
     <dt class="col-sm-3">タイトル</dt>
@@ -16,5 +17,25 @@
 
 <a class="btn btn-primary" href="{% url 'app:cards_update' card.pk %}" role="button">編集</a>
 <a class="btn btn-danger" href="{% url 'app:cards_delete' card.pk %}" role="button">削除</a>
+<!-- コメント　-->
+<h2>コメント</h2>
+<div class="commentlist">
+    {% if comment_list %}
+    {% for comment in comment_list %}
+    <p>{{ comment.user }}</p> 
+    <p>{{ comment.description }}</p>
+    {% endfor %}
+    {% else %}
+    <p>まだコメントはありません</p>
+    {% endif %}
+</div>
+<!-- コメント表示終了　-->
+<!-- コメント投稿　-->
+    <form method="post">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">送信</button>
+    </form>
+</div>
 
 {% endblock %}

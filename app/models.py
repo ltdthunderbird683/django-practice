@@ -21,6 +21,15 @@ class Card(models.Model):
         return self.title
 
 
+class Comment(models.Model):
+    description = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.description[:20]
+
+
 """
 models.Modelの__str__()関数により、管理画面に表示されるモデル内のデータを判別するための名前の定義ができる
 https://office54.net/python/django/model-str-self

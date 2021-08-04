@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import fields
-from .models import List,Card
+from .models import List,Card,Comment
 
 class UserForm(forms.ModelForm):
 
@@ -56,3 +56,16 @@ class CardCreateFromHomeForm(forms.ModelForm):
     class Meta:
         model = Card
         fields = ("title","description")
+
+
+class CommentForm(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        super(CommentForm, self).__init__(*args,**kwargs)
+        for field_name, field in  self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+    
+
+    class Meta:
+        model = Comment
+        fields = ("description",)
